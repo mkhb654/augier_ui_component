@@ -56,6 +56,9 @@ export default function CapabilityStatement({ onSkip, onFileUpload }) {
                         <p className="text-sm text-gray-600 mt-2">{file.name}</p>
                     )}
                 </div>
+                <p className="text-sm text-gray-600 text-center">
+                    Supported formats: PDF, DOC, DOCX
+                </p>
             </div>
         </div>
     );
