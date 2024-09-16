@@ -1,18 +1,17 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import { FaUpload } from 'react-icons/fa';
 
 export default function CapabilityStatement({ onSkip, onFileUpload }) {
-    const [file, setFile] = useState(null);
+    const [file, setFile] = React.useState(null);
     const fileInputRef = useRef(null);
 
     const handleFileChange = (event) => {
         const selectedFile = event.target.files[0];
         if (selectedFile) {
             setFile(selectedFile);
-            alert('File uploaded successfully');
-            onFileUpload(); // Notify parent component about the successful upload
+            onFileUpload(selectedFile); // Notify parent component about the successful upload
         }
     };
 
