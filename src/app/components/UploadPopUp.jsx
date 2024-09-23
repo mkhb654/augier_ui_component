@@ -3,7 +3,7 @@
 export default function UploadPopup() {
   return (
     <div className="flex justify-center items-center h-screen ">
-      <div className="flex flex-col items-center justify-center w-[350px] h-[300px] bg-white p-8 border border-gray-300 rounded-lg shadow-lg">
+      <div className="flex flex-col items-center justify-center w-[50%] h-[250px] bg-white p-8 border border-gray-300 rounded-lg shadow-lg">
         <h2 className="text-2xl font-semibold text-purple-600 mt-3 ">Uploading your Capability Statement...</h2>
         {/* Spinner */}
         <div className="flex justify-center items-center h-full">
