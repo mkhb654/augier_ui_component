@@ -28,7 +28,7 @@ const PopUpConfirmation = ({ message, onClose }) => {
                 </svg>
 
                 {/* Centered Message */}
-                <p className="text-xl font-bold text-gray-700 mb-6">{message}</p>
+                <div className="text-xl font-bold text-gray-700 mb-6">{message}</div>
             </div>
         </div>
     );
