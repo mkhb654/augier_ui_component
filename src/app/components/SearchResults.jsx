@@ -53,8 +53,8 @@ const SearchResults = ({ results, searchText }) => {
                             <div className="bg-purple-400 p-2 rounded-lg">
                                 <button onClick={() => toggleFavorite(index)} className="text-white flex items-center">
                                     {favoritedItems[index] ? <FaStar /> : <FaRegStar />}
-                                    <span className="ml-1 text-sm">
-                                        {favoritedItems[index] ? 'Remove from Bid Pipeline' : 'Add to Bid Pipeline'}
+                                    <span className="ml-3 text-sm">
+                                        {favoritedItems[index] ? 'Remove' : 'Favourites'}
                                     </span>
                                 </button>
                             </div>
