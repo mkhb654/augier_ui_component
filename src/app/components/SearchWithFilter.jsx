@@ -173,28 +173,31 @@ export default function SearchWithFilter() {
                 </button>
                 <button
                   onClick={toggleFilters}
-                  className="px-4 py-2 bg-white text-purple-600 border border-purple-600 rounded-lg shadow-md"
+                  className="px-3 py-2 bg-white text-purple-600 border border-purple-600 rounded-lg shadow-md"
                 >
                   {showFilters ? 'Hide Filters' : 'Show Filters'}
                 </button>
               </div>
             </div>
-
             {appliedFilters.length > 0 && (
-              <div className="ml-4 flex items-center space-x-2 bg-gray-100 border border-gray-300 rounded-lg px-4 py-2">
-                <span className="flex items-center text-black">
-                  {appliedFilters.slice(0, 2).map((filter, index) => (
-                    <span key={index} className="px-2 py-1 bg-gray-200 text-black rounded-full text-sm flex items-center space-x-2">
-                      <span>{filter.label}</span>
-                      <button className="ml-2 text-red-500" onClick={() => removeFilter(filter.type)}>&#x2716;</button>
-                    </span>
-                  ))}
-                  {appliedFilters.length > 2 && (
-                    <span className="text-black">+{appliedFilters.length - 2} filters</span>
-                  )}
-                </span>
-              </div>
-            )}
+  <div className="flex items-center space-x-2 bg-gray-100 border border-gray-400 rounded-lg px-4 py-2">
+    <span className="flex items-center text-black">
+      {appliedFilters.slice(0, 2).map((filter, index) => (
+        <span key={index} className="px-3 py-1 bg-gray-200 text-black rounded-full text-sm flex items-center space-x-2 hover:bg-gray-300 transition duration-200">
+          <span className="truncate w-24">{filter.label}</span> {/* Adjust w-24 as needed */}
+          <button className="ml-2 text-red-500 hover:text-red-700 transition duration-200" onClick={() => removeFilter(filter.type)}>
+            &#x2716;
+          </button>
+        </span>
+      ))}
+      {appliedFilters.length > 2 && (
+        <span className="text-black">+{appliedFilters.length - 2} filters</span>
+      )}
+    </span>
+  </div>
+)}
+
+
           </div>
 
           <div className="flex flex-1 space-x-3">
