@@ -13,6 +13,7 @@ export default function FilterComponent({
   setSelectedPSC,
   selectedTypeOfSetAside,
   setSelectedTypeOfSetAside,
+  
 }) {
   const [naicsOptions, setNaicsOptions] = useState([]);
   const [typeOfSetAsideOptions, setTypeOfSetAsideOptions] = useState([]);
@@ -42,14 +43,12 @@ export default function FilterComponent({
           ...new Set(data.map(item => item.classification_code).filter(psc => psc)),
         ].map(psc => ({ value: psc, label: psc }));
         setPscOptions(uniquePscOptions);
-
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
     fetchData();
   }, []);
-
 
   const handleCodesChange = (selectedOptions) => {
     const values = selectedOptions.map(option => option.value);
@@ -62,6 +61,7 @@ export default function FilterComponent({
       <div className="text-sm mb-4 text-gray-800">A targeted search is the best search</div>
       <hr className="mb-4 border-gray-300" />
       <div className="space-y-4 ">
+        
         <div>
           <label className="block text-gray-800">Filter by NAICS codes:</label>
           <Select
@@ -78,12 +78,12 @@ export default function FilterComponent({
         <div>
           <label className="block text-gray-800">Filter by PSC Codes:</label>
           <Select
-            options={pscOptions} // Use the PSC options here
-            value={pscOptions.find(option => option.value === selectedPSC) || null} // Set the selected value correctly
-            onChange={(option) => setSelectedPSC(option ? option.value : '')} // Update selectedPSC state
+            options={pscOptions}
+            value={pscOptions.find(option => option.value === selectedPSC) || null}
+            onChange={(option) => setSelectedPSC(option ? option.value : '')}
             className="basic-single mt-2"
             classNamePrefix="select"
-            placeholder="Select a PSC Code" // Optional placeholder
+            placeholder="Select a PSC Code"
           />
         </div>
 

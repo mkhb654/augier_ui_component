@@ -1,8 +1,8 @@
-'use client'
+'use client';
 import React, { useState, useEffect } from 'react';
 import FilterComponent from './FilterComponent';
-import SideBar from './SideBar';
 import SearchResults from './SearchResults';
+import SideBar from './SideBar';
 
 export default function SearchWithFilter() {
   const [showFilters, setShowFilters] = useState(false);
@@ -41,15 +41,15 @@ export default function SearchWithFilter() {
 
   const handleFilters = () => {
     const filters = [];
-
     if (selectedCodes.length > 0) filters.push({ label: `Codes: ${selectedCodes.join(', ')}`, type: 'codes' });
     if (selectedStartDate) filters.push({ label: `Start Date: ${selectedStartDate}`, type: 'startDate' });
     if (selectedEndDate) filters.push({ label: `End Date: ${selectedEndDate}`, type: 'endDate' });
     if (selectedPSC) filters.push({ label: `PSC: ${selectedPSC}`, type: 'PSC' });
     if (selectedTypeOfSetAside) filters.push({ label: `Set Aside: ${selectedTypeOfSetAside}`, type: 'typeOfSetAside' });
+
     setAppliedFilters(filters);
     toggleFilters();
-    // Apply filters to the data
+
     const filteredData = data.filter(item => {
       return filters.every(filter => {
         if (filter.type === 'codes') return selectedCodes.some(code => item.codes?.includes(code));
@@ -57,87 +57,70 @@ export default function SearchWithFilter() {
         if (filter.type === 'endDate') return new Date(item.endDate) <= new Date(selectedEndDate);
         if (filter.type === 'PSC') return item.PSC === selectedPSC;
         if (filter.type === 'typeOfSetAside') return item.typeOfSetAside === selectedTypeOfSetAside;
-
         return true;
       });
     });
     setFilteredOptions(filteredData);
-    console.log("Filtered::", filteredData)
   };
 
   const handleSearch = () => {
-    // If there are no applied filters and no search text, return an empty array
-    console.log("appliedFilters:::", appliedFilters);
-    console.log("search Text:::", searchText);
     if (appliedFilters.length === 0 && !searchText) {
-      setResults([]);// Exit the function early
-    }
-    else {
-
-      const matchesFilters = (notice) => {
-        // Check if the notice matches the applied filters
-        return appliedFilters.every((filter) => {
-          const { type, label } = filter;
-
-          switch (type) {
-            case 'codes':
-              const codes = label.replace('Codes: ', '').split(', ').map(code => code.trim());
-              return codes.includes(notice.naics_code);
-
-            case 'startDate':
-              return new Date(notice.posted_date) >= new Date(label.replace('Start Date: ', ''));
-
-            case 'endDate':
-              return new Date(notice.posted_date) <= new Date(label.replace('End Date: ', ''));
-
-            case 'typeOfSetAside':
-              return notice.type_of_set_aside === label.replace('Set Aside: ', '');
-
-            case 'PSC': // New case for PSC code]
-              const pscCodes = label.replace('PSC: ', '').split(', ').map(code => code.trim());
-              return pscCodes.some(code => notice.summary.includes(code)); // Match in the summary
-
-            default:
-              return false; // If no matching filter type, exclude the notice
-          }
-        });
-      };
-
-      const matchesSearchText = (notice) => {
-        const lowercasedSearchText = searchText.toLowerCase();
-        const noticeTitle = notice.title.toLowerCase();
-        const noticeSolicitationNumber = notice.solicitation_number.toLowerCase();
-
-        return (
-          noticeTitle.includes(lowercasedSearchText) ||
-          noticeSolicitationNumber.includes(lowercasedSearchText)
-        );
-      };
-
-
-      // Start with filtering based on the applied filters
-      let filteredResults = data.filter(matchesFilters);
-
-      // If there is a searchText, further filter the already filtered results
-      if (searchText) {
-        filteredResults = filteredResults.filter(matchesSearchText);
-      }
-
-      // Set the results; if no matches, it will be an empty array
-      setResults(filteredResults);
-      console.log("Filtered Options::", filteredResults);
+      setResults([]);
+      return;
     }
 
+    const matchesFilters = (notice) => {
+      return appliedFilters.every((filter) => {
+        const { type, label } = filter;
+
+        switch (type) {
+          case 'codes':
+            const codes = label.replace('Codes: ', '').split(', ').map(code => code.trim());
+            return codes.includes(notice.naics_code);
+          case 'startDate':
+            const startDate = new Date(label.replace('Start Date: ', ''));
+            const postedDate = new Date(notice.posted_date);
+            return postedDate >= startDate;
+          case 'endDate':
+            const endDate = new Date(label.replace('End Date: ', ''));
+            const responseDeadline = notice.response_deadline ? new Date(notice.response_deadline) : null;
+            return responseDeadline ? responseDeadline <= endDate : false;
+          case 'typeOfSetAside':
+            return notice.type_of_set_aside === label.replace('Set Aside: ', '');
+          case 'PSC':
+            const pscCode = label.replace('PSC: ', '').trim();
+            return notice.classification_code === pscCode;            
+          default:
+            return false;
+        }
+      });
+    };
+
+    const matchesSearchText = (notice) => {
+      const lowercasedSearchText = searchText.toLowerCase();
+      const noticeTitle = notice.title.toLowerCase();
+      const noticeSolicitationNumber = notice.solicitation_number.toLowerCase();
+
+      return (
+        noticeTitle.includes(lowercasedSearchText) ||
+        noticeSolicitationNumber.includes(lowercasedSearchText)
+      );
+    };
+
+    let filteredResults = data.filter(matchesFilters);
+    if (searchText) {
+      filteredResults = filteredResults.filter(matchesSearchText);
+    }
+
+    setResults(filteredResults);
     setAppliedFilters([]);
     setSelectedCodes('');
     setSelectedStartDate('');
     setSelectedEndDate('');
     setSelectedPSC('');
     setSelectedTypeOfSetAside('');
-    setIsSearchClicked(true); // Set search button clicked state
+    setIsSearchClicked(true);
   };
-
-
 
   const removeFilter = (type) => {
     setAppliedFilters(appliedFilters.filter((filter) => filter.type !== type));
@@ -147,97 +130,88 @@ export default function SearchWithFilter() {
     if (type === 'endDate') setSelectedEndDate('');
     if (type === 'PSC') setSelectedPSC('');
     if (type === 'typeOfSetAside') setSelectedTypeOfSetAside('');
-    if (type === 'searchText') setSearchText('')
-
+    if (type === 'searchText') setSearchText('');
   };
 
-
-
   return (
-    <div>
+    <div className="flex flex-col h-screen">
       <header className="flex justify-between items-center p-4 bg-white shadow-md">
-        <div className="flex items-center">
-          <img src="/imgs/augier-logo.jpg" alt="Logo" className="h-10" />
-        </div>
+        <img src="/imgs/augier-logo.jpg" alt="Logo" className="h-10" />
         <div className="flex items-center">
           <img src="/imgs/augier-logo.jpg" alt="User Avatar" className="h-8 w-8 rounded-full" />
           <span className="ml-2 text-gray-700">Hello, User</span>
         </div>
       </header>
 
-      <div className="flex min-h-screen bg-gray-50">
-        <main className="flex-1 p-10">
-          <div className="mb-8 p-4">
+      <main className="flex flex-1 bg-gray-50 ">
+        <SideBar />
+        <div className="flex flex-col w-full p-10 space-y-4">
+          {/* Added heading and description */}
+          <div className="mb-4">
             <h1 className="text-3xl text-purple-600 font-semibold">Find Opportunities</h1>
             <div className="mt-2 text-sm text-gray-600">
               Land your dream Government Contract in just a few steps. AugierAi search is at your service.
             </div>
           </div>
 
-          <div className="flex items-center text-gray-800 justify-between mb-8 space-x-4">
-            <div className="flex-1">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center flex-1 space-x-4">
               <input
                 type="text"
                 placeholder="Search by Title or Solicitation Number"
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
-                className="w-full px-4 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                required // Make the field required
+                className="px-2 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-purple-500 w-[70%] text-gray-800"
+                required
               />
+              <div className="flex items-center space-x-2"> {/* Wrapped buttons in a div */}
+                <button
+                  onClick={handleSearch}
+                  className={`px-4 py-2 ${searchText ? 'bg-purple-600 text-white' : 'bg-purple-600 text-white'} rounded-lg shadow-md`}
+                >
+                  Search
+                </button>
+                <button
+                  onClick={toggleFilters}
+                  className="px-4 py-2 bg-white text-purple-600 border border-purple-600 rounded-lg shadow-md"
+                >
+                  {showFilters ? 'Hide Filters' : 'Show Filters'}
+                </button>
+              </div>
             </div>
-            <button
-              onClick={handleSearch}
-              className={`px-6 py-2 ${searchText ? 'bg-purple-600 text-white' : 'bg-purple-500 text-gray-200'} rounded-lg shadow-md hover:bg-purple-500`}
-              disabled={!searchText} // Disable when searchText is empty
-            >
-              Search
-            </button>
-
-            <button
-              onClick={toggleFilters}
-              className="px-4 py-2 bg-white text-purple-600 border border-purple-600 rounded-lg shadow-md hover:bg-purple-100"
-            >
-              {showFilters ? 'Hide Filters' : 'Show Filters'}
-            </button>
 
             {appliedFilters.length > 0 && (
-              <div className="flex items-center space-x-2 bg-gray-100 border border-gray-300 rounded-lg px-4 py-2">
-                {appliedFilters.slice(0, 2).map((filter, index) => (
-                  <span
-                    key={index}
-                    className="px-2 py-1 bg-gray-200 text-gray-800 rounded-full text-sm flex items-center space-x-2"
-                  >
-                    <span>{filter.label}</span>
-                    <button
-                      className="ml-2 text-red-500"
-                      onClick={() => removeFilter(filter.type)}
-                    >
-                      &#x2716;
-                    </button>
-                  </span>
-                ))}
-                {appliedFilters.length > 2 && (
-                  <span className="px-2 py-1 bg-gray-200 text-gray-800 rounded-full text-sm">
-                    +{appliedFilters.length - 2} more
-                  </span>
-                )}
+              <div className="ml-4 flex items-center space-x-2 bg-gray-100 border border-gray-300 rounded-lg px-4 py-2">
+                <span className="flex items-center text-black">
+                  {appliedFilters.slice(0, 2).map((filter, index) => (
+                    <span key={index} className="px-2 py-1 bg-gray-200 text-black rounded-full text-sm flex items-center space-x-2">
+                      <span>{filter.label}</span>
+                      <button className="ml-2 text-red-500" onClick={() => removeFilter(filter.type)}>&#x2716;</button>
+                    </span>
+                  ))}
+                  {appliedFilters.length > 2 && (
+                    <span className="text-black">+{appliedFilters.length - 2} filters</span>
+                  )}
+                </span>
               </div>
             )}
           </div>
 
-          <div className="flex justify-center items-center flex-1">
-            <div className={` ${showFilters ? 'w-3/4' : 'w-full'}`}>
+          <div className="flex flex-1 space-x-3">
+            <div className={`flex-1 overflow-auto ${showFilters ? 'pr-4' : ''}`}>
               {isSearchClicked && searchResults.length > 0 ? (
-                <SearchResults results={searchResults} searchText={searchText} />
+                <div className="max-h-[600px] overflow-y-auto"> {/* Set max height and enable scrolling */}
+                  <SearchResults results={searchResults} searchText={searchText} />
+                </div>
               ) : (
-                <div className="flex flex-col items-center">
+                <div className={`flex flex-col items-center justify-center h-full ${showFilters ? 'pr-4' : ''}`}>
                   <img src="/imgs/binocular.png" alt="Binoculars" className="w-25 h-25 mb-4" />
-                  <div className="text-gray-600">It's so empty here, let's find something exciting!</div>
+                  <div className="text-gray-600 text-center">It's so empty here, let's find something exciting!</div>
                 </div>
               )}
             </div>
             {showFilters && (
-              <div className="w-1.5/4 ">
+              <div className="w-1.2/3 p-4 bg-white shadow-lg rounded-md overflow-auto">
                 <FilterComponent
                   applyFilters={handleFilters}
                   selectedCodes={selectedCodes}
@@ -250,12 +224,15 @@ export default function SearchWithFilter() {
                   setSelectedPSC={setSelectedPSC}
                   selectedTypeOfSetAside={selectedTypeOfSetAside}
                   setSelectedTypeOfSetAside={setSelectedTypeOfSetAside}
+                 
                 />
               </div>
             )}
           </div>
-        </main>
-      </div>
+        </div>
+      </main>
+
+      
     </div>
   );
 }

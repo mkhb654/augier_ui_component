@@ -1,7 +1,7 @@
 'use client';
 import React, { useRef, useState } from 'react';
 import { FaUpload } from 'react-icons/fa';
-import UploadPopup from './UploadPopup'; // Adjust the import path accordingly
+import UploadPopup from './UploadPopUp';
 import PopUpConfirmation from './PopUpConfirmation'; // Adjust the import path accordingly
 
 export default function CapabilityStatement({ onSkip, onFileUpload }) {
