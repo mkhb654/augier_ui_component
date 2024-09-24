@@ -15,7 +15,7 @@ export default function FilterComponent() {
     selectedTypeOfSetAside,
     setSelectedTypeOfSetAside,
     applyFilters,
-  } = useAppContext(); // Use context instead of props
+  } = useAppContext();
 
   const [naicsOptions, setNaicsOptions] = useState([]);
   const [typeOfSetAsideOptions, setTypeOfSetAsideOptions] = useState([]);
@@ -58,12 +58,13 @@ export default function FilterComponent() {
   };
 
   return (
-    <div className="w-[404px] p-6 bg-white text-gray-800 border border-gray-200 shadow-lg rounded-lg relative">
+    <div className="p-6 bg-white text-gray-800 border border-gray-200 shadow-lg rounded-lg">
       <h2 className="text-2xl font-semibold mb-4 text-purple-700">Select Filters</h2>
       <div className="text-sm mb-4 text-gray-800">A targeted search is the best search</div>
       <hr className="mb-4 border-gray-300" />
-      <div className="space-y-4 ">
-        
+      <div className="space-y-4">
+
+        {/* NAICS Codes Filter */}
         <div>
           <label className="block text-gray-800">Filter by NAICS codes:</label>
           <Select
@@ -71,12 +72,13 @@ export default function FilterComponent() {
             options={naicsOptions}
             value={naicsOptions.filter(option => selectedCodes.includes(option.value))}
             onChange={handleCodesChange}
-            className="basic-single mt-2 text-gray-800"
+            className="basic-single mt-2"
             classNamePrefix="select"
             placeholder="NAICS codes"
           />
         </div>
 
+        {/* PSC Codes Filter */}
         <div>
           <label className="block text-gray-800">Filter by PSC Codes:</label>
           <Select
@@ -89,37 +91,40 @@ export default function FilterComponent() {
           />
         </div>
 
+        {/* Date Filters */}
         <div>
           <label className="block text-gray-800">Filter by Date:</label>
-          <div className="grid grid-cols-2 text-gray-800 gap-4 mt-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 text-gray-800 gap-4 mt-2">
             <input
               type="date"
-              className="p-2 border rounded-md"
+              className="p-2 border rounded-md w-full"
               value={selectedStartDate}
               onChange={(e) => setSelectedStartDate(e.target.value)}
             />
             <input
               type="date"
-              className="p-2 border rounded-md"
+              className="p-2 border rounded-md w-full"
               value={selectedEndDate}
               onChange={(e) => setSelectedEndDate(e.target.value)}
             />
           </div>
         </div>
 
+        {/* Type of Set Aside Filter */}
         <div>
           <label className="block text-gray-800">Filter by Type of Set Aside:</label>
           <Select
             options={typeOfSetAsideOptions}
-            value={typeOfSetAsideOptions.find(option => option.value === selectedTypeOfSetAside)}
+            value={typeOfSetAsideOptions.find(option => option.value === selectedTypeOfSetAside) || null}
             onChange={(option) => setSelectedTypeOfSetAside(option ? option.value : '')}
             className="basic-single mt-2"
             classNamePrefix="select"
           />
         </div>
 
+        {/* Apply Filters Button */}
         <button
-          className="w-full py-2 mt-4 bg-purple-600 text-white rounded-md shadow-md hover:bg-purple-500"
+          className="w-full py-2 mt-4 bg-purple-600 text-white rounded-md shadow-md hover:bg-purple-500 transition duration-200"
           onClick={applyFilters}
         >
           Apply Selected Filters

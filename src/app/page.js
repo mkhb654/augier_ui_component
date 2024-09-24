@@ -1,4 +1,5 @@
 import PaymentConfirmationPage from './components/PaymentConfirmation';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 import CapabilityStatement from './components/CapabilityStatement';
 import SearchWithFilter from './components/SearchWithFilter';

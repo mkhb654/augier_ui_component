@@ -4,6 +4,7 @@ import { useAppContext } from '../context/AppContext';
 import FilterComponent from './FilterComponent';
 import SearchResults from './SearchResults';
 import SideBar from './SideBar';
+import { FaSlidersH,FaSearch  } from 'react-icons/fa';
 
 export default function SearchWithFilter() {
   const {
@@ -35,7 +36,7 @@ export default function SearchWithFilter() {
     setResults,
     toggleFilters,
     results,
-    
+
   } = useAppContext(); // Use the context
 
 
@@ -127,10 +128,10 @@ export default function SearchWithFilter() {
     };
 
     let filteredResults = data.filter(matchesFilters);
-    console.log("filtered::::;",filteredResults)
+    console.log("filtered::::;", filteredResults)
     if (searchText) {
       filteredResults = filteredResults.filter(matchesSearchText);
-      
+
     }
     setResults(filteredResults);
     setSearchText('');
@@ -165,83 +166,98 @@ export default function SearchWithFilter() {
           </div>
 
           <div className="flex justify-between items-center">
-            <div className="flex items-center flex-1 space-x-4">
-              <input
-                type="text"
-                placeholder="Search by Title or Solicitation Number"
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                className="px-2 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-purple-500 w-[70%] text-gray-800"
-                required
-              />
-              <div className="flex items-center space-x-2"> {/* Wrapped buttons in a div */}
+  <div className="flex items-center flex-1 space-x-4">
+    <div className="relative w-full"> 
+      <input
+        type="text"
+        placeholder="Search by Title or Solicitation Number"
+        value={searchText}
+        onChange={(e) => setSearchText(e.target.value)}
+        className="px-8 py-4 border border-gray-300 rounded-md shadow-sm w-full text-gray-800 focus:ring-2 focus:ring-purple-500 pl-10" // Added padding for icon
+        required
+      />
+      <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" /> {/* Added magnifying icon */}
+      <button
+        onClick={handleSearch}
+        className={`absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-2 ${searchText ? 'bg-purple-700 ' : 'bg-purple-700 '} text-white rounded-md shadow-md focus:outline-none`}
+      >
+        Search
+      </button>
+    </div>
+
+    <div className={`flex items-center justify-between ${appliedFilters.length > 0 ? 'border border-gray-300 rounded-xl bg-gray-50' : ''} px-5 py-1`}>
+      <button
+        onClick={toggleFilters}
+        className={`${appliedFilters.length > 0 ? 'px-2 py-2' : 'px-2 py-2 border border-purple-600 rounded-md shadow-sm'} bg-white text-purple-600 transition-all`}
+      >
+        <div className="flex items-center space-x-2">
+          <FaSlidersH className="h-4 w-4 text-violet-500" />
+          <span>Filters</span>
+        </div>
+      </button>
+
+      {appliedFilters.length > 0 && (
+        <div className="flex items-center space-x-2 rounded-xl px-4 py-2">
+          <span className="flex items-center text-black">
+            {appliedFilters.slice(0, 2).map((filter, index) => (
+              <span
+                key={index}
+                className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm flex items-center space-x-2 hover:bg-purple-200 transition-all duration-200 shadow-sm"
+              >
+                <span className="truncate w-24">{filter.label}</span>
                 <button
-                  onClick={handleSearch}
-                  className={`px-4 py-2 ${searchText ? 'bg-purple-600 text-white' : 'bg-purple-600 text-white'} rounded-lg shadow-md`}
+                  className="ml-2 text-red-400 hover:text-red-700 transition-all duration-200"
+                  onClick={() => removeFilter(filter.type)}
                 >
-                  Search
+                  &#x2716;
                 </button>
-                <button
-                  onClick={toggleFilters}
-                  className="px-3 py-2 bg-white text-purple-600 border border-purple-600 rounded-lg shadow-md"
-                >
-                  {showFilters ? 'Hide Filters' : 'Show Filters'}
-                </button>
-              </div>
-            </div>
-            {appliedFilters.length > 0 && (
-              <div className="flex items-center space-x-2 bg-gray-100 border border-gray-400 rounded-lg px-4 py-2">
-                <span className="flex items-center text-black">
-                  {appliedFilters.slice(0, 2).map((filter, index) => (
-                    <span key={index} className="px-3 py-1 bg-gray-200 text-black rounded-full text-sm flex items-center space-x-2 hover:bg-gray-300 transition duration-200">
-                      <span className="truncate w-24">{filter.label}</span> {/* Adjust w-24 as needed */}
-                      <button className="ml-2 text-red-500 hover:text-red-700 transition duration-200" onClick={() => removeFilter(filter.type)}>
-                        &#x2716;
-                      </button>
-                    </span>
-                  ))}
-                  {appliedFilters.length > 2 && (
-                    <span className="text-black">+{appliedFilters.length - 2} filters</span>
-                  )}
-                </span>
-              </div>
+              </span>
+            ))}
+            {appliedFilters.length > 2 && (
+              <span className="text-black">+{appliedFilters.length - 2} filters</span>
             )}
+          </span>
+        </div>
+      )}
+    </div>
+  </div>
+</div>
 
 
-          </div>
+<div className="relative flex flex-col md:flex-row space-x-3">
+  <div className={`flex-1 overflow-auto ${showFilters ? 'pr-4' : ''} ${showFilters ? 'md:mb-0 mb-4' : ''}`}>
+    {isSearchClicked && results.length > 0 ? (
+      <div className="max-h-[600px] overflow-y-auto"> {/* Set max height and enable scrolling */}
+        <SearchResults />
+      </div>
+    ) : (
+      <div className={`flex flex-col items-center justify-center h-full ${showFilters ? 'pr-4' : ''}`}>
+        <img src="/imgs/binocular.png" alt="Binoculars" className="w-25 h-25 mb-4" />
+        <div className="text-gray-600 text-center">It's so empty here, let's find something exciting!</div>
+      </div>
+    )}
+  </div>
 
-          <div className="flex flex-1 space-x-3">
-            <div className={`flex-1 overflow-auto ${showFilters ? 'pr-4' : ''}`}>
-              {isSearchClicked && results.length > 0 ? (
-                <div className="max-h-[600px] overflow-y-auto"> {/* Set max height and enable scrolling */}
-                  <SearchResults  />
-                </div>
-              ) : (
-                <div className={`flex flex-col items-center justify-center h-full ${showFilters ? 'pr-4' : ''}`}>
-                  <img src="/imgs/binocular.png" alt="Binoculars" className="w-25 h-25 mb-4" />
-                  <div className="text-gray-600 text-center">It's so empty here, let's find something exciting!</div>
-                </div>
-              )}
-            </div>
-            {showFilters && (
-              <div className="w-1.2/3 p-4 bg-white shadow-lg rounded-md overflow-auto">
-                <FilterComponent
-                  applyFilters={handleFilters}
-                  selectedCodes={selectedCodes}
-                  setSelectedCodes={setSelectedCodes}
-                  selectedStartDate={selectedStartDate}
-                  setSelectedStartDate={setSelectedStartDate}
-                  selectedEndDate={selectedEndDate}
-                  setSelectedEndDate={setSelectedEndDate}
-                  selectedPSC={selectedPSC}
-                  setSelectedPSC={setSelectedPSC}
-                  selectedTypeOfSetAside={selectedTypeOfSetAside}
-                  setSelectedTypeOfSetAside={setSelectedTypeOfSetAside}
+  {showFilters && ( // Conditionally render FilterComponent above search results on smaller screens
+    <div className="absolute md:static top-0 right-0 w-full md:w-1/3 p-4 bg-white shadow-lg rounded-md mb-4 md:mb-0 overflow-auto z-10">
+      <FilterComponent
+        applyFilters={handleFilters}
+        selectedCodes={selectedCodes}
+        setSelectedCodes={setSelectedCodes}
+        selectedStartDate={selectedStartDate}
+        setSelectedStartDate={setSelectedStartDate}
+        selectedEndDate={selectedEndDate}
+        setSelectedEndDate={setSelectedEndDate}
+        selectedPSC={selectedPSC}
+        setSelectedPSC={setSelectedPSC}
+        selectedTypeOfSetAside={selectedTypeOfSetAside}
+        setSelectedTypeOfSetAside={setSelectedTypeOfSetAside}
+      />
+    </div>
+  )}
+</div>
 
-                />
-              </div>
-            )}
-          </div>
+
         </div>
       </main>
 
