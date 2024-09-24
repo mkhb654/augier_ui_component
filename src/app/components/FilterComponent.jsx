@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
+import { useAppContext } from '../context/AppContext';
 
-export default function FilterComponent({
-  applyFilters,
-  selectedCodes,
-  setSelectedCodes,
-  selectedStartDate,
-  setSelectedStartDate,
-  selectedEndDate,
-  setSelectedEndDate,
-  selectedPSC,
-  setSelectedPSC,
-  selectedTypeOfSetAside,
-  setSelectedTypeOfSetAside,
-  
-}) {
+export default function FilterComponent() {
+  const {
+    selectedCodes,
+    setSelectedCodes,
+    selectedStartDate,
+    setSelectedStartDate,
+    selectedEndDate,
+    setSelectedEndDate,
+    selectedPSC,
+    setSelectedPSC,
+    selectedTypeOfSetAside,
+    setSelectedTypeOfSetAside,
+    applyFilters,
+  } = useAppContext(); // Use context instead of props
+
   const [naicsOptions, setNaicsOptions] = useState([]);
   const [typeOfSetAsideOptions, setTypeOfSetAsideOptions] = useState([]);
   const [pscOptions, setPscOptions] = useState([]);
@@ -26,7 +28,7 @@ export default function FilterComponent({
         const response = await fetch('https://www.augierai.com/api/daily-data');
         const data = await response.json();
 
-        // Extract unique naics_code options
+        // Extract unique NAICS code options
         const uniqueNaicsOptions = [
           ...new Set(data.map(item => ({ value: item.naics_code, label: item.naics_code })).filter(code => code.value)),
         ];

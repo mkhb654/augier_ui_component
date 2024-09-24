@@ -1,25 +1,44 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { useAppContext } from '../context/AppContext';
 import FilterComponent from './FilterComponent';
 import SearchResults from './SearchResults';
 import SideBar from './SideBar';
 
 export default function SearchWithFilter() {
-  const [showFilters, setShowFilters] = useState(false);
-  const [searchText, setSearchText] = useState('');
-  const [selectedCodes, setSelectedCodes] = useState('');
-  const [selectedStartDate, setSelectedStartDate] = useState('');
-  const [selectedEndDate, setSelectedEndDate] = useState('');
-  const [selectedPSC, setSelectedPSC] = useState('');
-  const [selectedTypeOfSetAside, setSelectedTypeOfSetAside] = useState('');
-  const [appliedFilters, setAppliedFilters] = useState([]);
-  const [data, setData] = useState([]);
-  const [filteredOptions, setFilteredOptions] = useState([]);
-  const [error, setError] = useState(null);
-  const [isSearchClicked, setIsSearchClicked] = useState(false);
-  const [searchResults, setResults] = useState([]);
+  const {
+    showFilters,
+    setShowFilters,
+    searchText,
+    setSearchText,
+    selectedCodes,
+    setSelectedCodes,
+    selectedStartDate,
+    setSelectedStartDate,
+    selectedEndDate,
+    setSelectedEndDate,
+    selectedPSC,
+    setSelectedPSC,
+    selectedTypeOfSetAside,
+    setSelectedTypeOfSetAside,
+    appliedFilters,
+    setAppliedFilters,
+    data,
+    setData,
+    removeFilter,
+    filteredOptions,
+    setFilteredOptions,
+    error,
+    setError,
+    isSearchClicked,
+    setIsSearchClicked,
+    setResults,
+    toggleFilters,
+    results,
+    
+  } = useAppContext(); // Use the context
 
-  const toggleFilters = () => setShowFilters(!showFilters);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,7 +56,7 @@ export default function SearchWithFilter() {
     };
 
     fetchData();
-  }, []);
+  }, [setData, setFilteredOptions, setError]);
 
   const handleFilters = () => {
     const filters = [];
@@ -89,7 +108,7 @@ export default function SearchWithFilter() {
             return notice.type_of_set_aside === label.replace('Set Aside: ', '');
           case 'PSC':
             const pscCode = label.replace('PSC: ', '').trim();
-            return notice.classification_code === pscCode;            
+            return notice.classification_code === pscCode;
           default:
             return false;
         }
@@ -108,11 +127,13 @@ export default function SearchWithFilter() {
     };
 
     let filteredResults = data.filter(matchesFilters);
+    console.log("filtered::::;",filteredResults)
     if (searchText) {
       filteredResults = filteredResults.filter(matchesSearchText);
+      
     }
-
     setResults(filteredResults);
+    setSearchText('');
     setAppliedFilters([]);
     setSelectedCodes('');
     setSelectedStartDate('');
@@ -120,17 +141,6 @@ export default function SearchWithFilter() {
     setSelectedPSC('');
     setSelectedTypeOfSetAside('');
     setIsSearchClicked(true);
-  };
-
-  const removeFilter = (type) => {
-    setAppliedFilters(appliedFilters.filter((filter) => filter.type !== type));
-
-    if (type === 'codes') setSelectedCodes('');
-    if (type === 'startDate') setSelectedStartDate('');
-    if (type === 'endDate') setSelectedEndDate('');
-    if (type === 'PSC') setSelectedPSC('');
-    if (type === 'typeOfSetAside') setSelectedTypeOfSetAside('');
-    if (type === 'searchText') setSearchText('');
   };
 
   return (
@@ -180,31 +190,31 @@ export default function SearchWithFilter() {
               </div>
             </div>
             {appliedFilters.length > 0 && (
-  <div className="flex items-center space-x-2 bg-gray-100 border border-gray-400 rounded-lg px-4 py-2">
-    <span className="flex items-center text-black">
-      {appliedFilters.slice(0, 2).map((filter, index) => (
-        <span key={index} className="px-3 py-1 bg-gray-200 text-black rounded-full text-sm flex items-center space-x-2 hover:bg-gray-300 transition duration-200">
-          <span className="truncate w-24">{filter.label}</span> {/* Adjust w-24 as needed */}
-          <button className="ml-2 text-red-500 hover:text-red-700 transition duration-200" onClick={() => removeFilter(filter.type)}>
-            &#x2716;
-          </button>
-        </span>
-      ))}
-      {appliedFilters.length > 2 && (
-        <span className="text-black">+{appliedFilters.length - 2} filters</span>
-      )}
-    </span>
-  </div>
-)}
+              <div className="flex items-center space-x-2 bg-gray-100 border border-gray-400 rounded-lg px-4 py-2">
+                <span className="flex items-center text-black">
+                  {appliedFilters.slice(0, 2).map((filter, index) => (
+                    <span key={index} className="px-3 py-1 bg-gray-200 text-black rounded-full text-sm flex items-center space-x-2 hover:bg-gray-300 transition duration-200">
+                      <span className="truncate w-24">{filter.label}</span> {/* Adjust w-24 as needed */}
+                      <button className="ml-2 text-red-500 hover:text-red-700 transition duration-200" onClick={() => removeFilter(filter.type)}>
+                        &#x2716;
+                      </button>
+                    </span>
+                  ))}
+                  {appliedFilters.length > 2 && (
+                    <span className="text-black">+{appliedFilters.length - 2} filters</span>
+                  )}
+                </span>
+              </div>
+            )}
 
 
           </div>
 
           <div className="flex flex-1 space-x-3">
             <div className={`flex-1 overflow-auto ${showFilters ? 'pr-4' : ''}`}>
-              {isSearchClicked && searchResults.length > 0 ? (
+              {isSearchClicked && results.length > 0 ? (
                 <div className="max-h-[600px] overflow-y-auto"> {/* Set max height and enable scrolling */}
-                  <SearchResults results={searchResults} searchText={searchText} />
+                  <SearchResults  />
                 </div>
               ) : (
                 <div className={`flex flex-col items-center justify-center h-full ${showFilters ? 'pr-4' : ''}`}>
@@ -227,7 +237,7 @@ export default function SearchWithFilter() {
                   setSelectedPSC={setSelectedPSC}
                   selectedTypeOfSetAside={selectedTypeOfSetAside}
                   setSelectedTypeOfSetAside={setSelectedTypeOfSetAside}
-                 
+
                 />
               </div>
             )}
@@ -235,7 +245,7 @@ export default function SearchWithFilter() {
         </div>
       </main>
 
-      
+
     </div>
   );
 }

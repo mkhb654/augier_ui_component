@@ -1,19 +1,18 @@
 'use client';
-import React, { useRef, useState } from 'react';
+import React, { useRef, useContext } from 'react';
 import { FaUpload } from 'react-icons/fa';
 import UploadPopup from './UploadPopUp';
 import PopUpConfirmation from './PopUpConfirmation'; // Adjust the import path accordingly
+import { AppContext } from '../context/AppContext'; // Import the AppContext
 
-export default function CapabilityStatement({ onSkip, onFileUpload }) {
-    const [file, setFile] = useState(null);
-    const [isUploading, setIsUploading] = useState(false);
-    const [uploadSuccess, setUploadSuccess] = useState(false);
+export default function CapabilityStatement({ onSkip }) {
+    const { files, setFiles, isUploading, setIsUploading, uploadSuccess, setUploadSuccess } = useContext(AppContext);
     const fileInputRef = useRef(null);
 
     const handleFileChange = (event) => {
         const selectedFile = event.target.files[0];
         if (selectedFile) {
-            setFile(selectedFile);
+            setFiles((prevFiles) => [...prevFiles, selectedFile]); // Update this line to use setFiles
             handleUpload(selectedFile); // Start upload process
         }
     };
@@ -25,13 +24,14 @@ export default function CapabilityStatement({ onSkip, onFileUpload }) {
         setTimeout(() => {
             setIsUploading(false);
             setUploadSuccess(true);
-            //onFileUpload(selectedFile); // Notify parent component about the successful upload
+            // Optionally notify parent component about the successful upload
+            // onFileUpload(selectedFile);
         }, 2000); // Simulating a 2-second upload
     };
 
     const handleCloseConfirmation = () => {
         setUploadSuccess(false); // Close the confirmation popup
-        setFile(null); // Reset the file state
+        setFiles((prevFiles) => prevFiles.filter((file) => file.name !== selectedFile.name)); // Reset the file state if needed
     };
 
     if (isUploading) {
@@ -64,7 +64,7 @@ export default function CapabilityStatement({ onSkip, onFileUpload }) {
                             className="inline-flex items-center px-4 py-2 bg-purple-800 text-white border border-purple-600 hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-400 min-w-max"
                         >
                             <FaUpload className="w-4 h-4 mr-2" />
-                            {file ? 'Uploading...' : 'Upload'}
+                            {files.length > 0 ? 'Upload' : 'Upload'}
                         </button>
                         <input
                             type="file"
@@ -74,8 +74,8 @@ export default function CapabilityStatement({ onSkip, onFileUpload }) {
                             className="hidden"
                         />
                     </div>
-                    {file && (
-                        <div className="text-sm text-gray-600 mt-2">{file.name}</div>
+                    {files.length > 0 && (
+                        <div className="text-sm text-gray-600 mt-2">{files[files.length - 1].name}</div>
                     )}
                 </div>
                 <div className="text-sm text-gray-600 text-center">

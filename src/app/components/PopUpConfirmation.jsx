@@ -1,10 +1,19 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { AppContext } from '../context/AppContext'; // Import the AppContext
 
-const PopUpConfirmation = ({ message, onClose }) => {
+const PopUpConfirmation = () => {
+    const { uploadSuccess, setUploadSuccess } = useContext(AppContext); // Access uploadSuccess from context
+
+    const handleClose = () => {
+        setUploadSuccess(false); // Close the confirmation popup
+    };
+
+    if (!uploadSuccess) return null; // Render nothing if upload was not successful
+
     return (
         <div
             className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-            onClick={onClose} 
+            onClick={handleClose} 
         >
             <div
                 className="bg-white w-[650px] h-[291px] p-6 rounded-lg shadow-lg flex flex-col justify-center items-center text-center"
@@ -28,7 +37,7 @@ const PopUpConfirmation = ({ message, onClose }) => {
                 </svg>
 
                 {/* Centered Message */}
-                <div className="text-xl font-bold text-gray-700 mb-6">{message}</div>
+                <div className="text-xl font-bold text-gray-700 mb-6">Your capability statement has been successfully uploaded!</div>
             </div>
         </div>
     );

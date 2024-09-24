@@ -1,9 +1,12 @@
 // PaymentConfirmationPage.js
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
+import { useAppContext } from '../context/AppContext';
 
 const PaymentConfirmationPage = () => {
+    const { isEmailNotificationsChecked, setIsEmailNotificationsChecked } = useAppContext(); // Use context
+
     const features = [
         "AI Powered Opportunity Search",
         "AI Proposal Writing Assistance",
@@ -16,9 +19,7 @@ const PaymentConfirmationPage = () => {
         "Government Contract Database"
     ];
 
-    const [isChecked, setIsChecked] = useState(true);
-    
-    const handleCheckboxChange = () => setIsChecked(prev => !prev);
+    const handleCheckboxChange = () => setIsEmailNotificationsChecked(prev => !prev); // Update the context state
 
     return (
         <div className="min-h-screen bg-gray-100 flex flex-col">
@@ -82,7 +83,7 @@ const PaymentConfirmationPage = () => {
                         <input
                             type="checkbox"
                             id="emailNotifications"
-                            checked={isChecked}
+                            checked={isEmailNotificationsChecked}
                             onChange={handleCheckboxChange}
                             className="mr-3"
                         />

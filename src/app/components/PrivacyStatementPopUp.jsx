@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useContext } from 'react';
 import { MdInfoOutline, MdWarning } from 'react-icons/md';
 import { FaMagic, FaArrowRight } from 'react-icons/fa';
+import { AppContext } from '../context/AppContext';
 
 const PrivacyStatementPopup = () => {
-  const [isChecked, setIsChecked] = useState(true);
+  const { isChecked, setIsChecked } = useContext(AppContext);
 
   const toggleCheckbox = () => {
     setIsChecked(!isChecked);
@@ -72,3 +73,4 @@ const PrivacyStatementPopup = () => {
 };
 
 export default PrivacyStatementPopup;
+
