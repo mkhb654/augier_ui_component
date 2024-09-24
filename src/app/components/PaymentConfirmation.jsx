@@ -1,10 +1,12 @@
+// PaymentConfirmationPage.js
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import CapabilityStatement from './CapabilityStatement';
-import PopUpConfirmation from './PopUpConfirmation';
+import React from 'react';
+import { useAppContext } from '../context/AppContext';
 
-const PaymentConfirmation = () => {
+const PaymentConfirmationPage = () => {
+    const { isEmailNotificationsChecked, setIsEmailNotificationsChecked } = useAppContext(); // Use context
+
     const features = [
         "AI Powered Opportunity Search",
         "AI Proposal Writing Assistance",
@@ -17,38 +19,7 @@ const PaymentConfirmation = () => {
         "Government Contract Database"
     ];
 
-    const [isChecked, setIsChecked] = useState(true);
-    const [showCapabilityStatement, setShowCapabilityStatement] = useState(false);
-    const [showPopUp, setShowPopUp] = useState(false);
-    const [uploadedFileName, setUploadedFileName] = useState(null);
-    const [isPopUpShown, setIsPopUpShown] = useState(false); // New state for tracking pop-up visibility
-
-    useEffect(() => {
-        if (uploadedFileName) {
-            if (!isPopUpShown) {
-                setShowPopUp(true); // Show pop-up only if it hasn't been shown before
-                setIsPopUpShown(true); // Mark pop-up as shown
-            }
-            setShowCapabilityStatement(false);
-        } else {
-            const timer = setTimeout(() => {
-                setShowCapabilityStatement(true);
-            }, 500);
-
-            return () => clearTimeout(timer);
-        }
-    }, [uploadedFileName]);
-
-    const handleCheckboxChange = () => setIsChecked(prev => !prev);
-
-    const handleSkip = () => setShowCapabilityStatement(false);
-
-    const handleFileUpload = (file) => {
-        setUploadedFileName(file.name); 
-        setShowCapabilityStatement(false);
-    };
-
-    const handlePopUpClose = () => setShowPopUp(false);
+    const handleCheckboxChange = () => setIsEmailNotificationsChecked(prev => !prev); // Update the context state
 
     return (
         <div className="min-h-screen bg-gray-100 flex flex-col">
@@ -68,26 +39,11 @@ const PaymentConfirmation = () => {
                 </div>
             </header>
 
-            {/* Backdrop for CapabilityStatement */}
-            {showCapabilityStatement && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <CapabilityStatement onSkip={handleSkip} onFileUpload={handleFileUpload} />
-                </div>
-            )}
-
-            {/* Show PopUpConfirmation when file upload is successful */}
-            {showPopUp && (
-                <PopUpConfirmation
-                    message="Upload successful"
-                    onClose={handlePopUpClose}
-                />
-            )}
-
             {/* Main Content */}
-            <main className={`flex-grow flex flex-col items-center justify-center p-4 ${showCapabilityStatement || showPopUp ? 'opacity-50' : 'opacity-100'} transition-opacity duration-300`}>
+            <main className="flex-grow flex flex-col items-center justify-center p-4">
                 <div className="w-full max-w-4xl">
                     <div className="flex items-center mb-6">
-                        <p className="text-xl text-gray-600 mr-2">Payment Received</p>
+                        <div className="text-xl text-gray-600 mr-2">Payment Received</div>
                         {/* Green Tick Icon */}
                         <svg className="w-6 h-6 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg">
                             <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none" />
@@ -95,9 +51,9 @@ const PaymentConfirmation = () => {
                         </svg>
                     </div>
 
-                    <p className="text-2xl font-bold text-purple-800 mb-6">Congratulations on buying the Augier AI premium subscription!</p>
+                    <div className="text-2xl font-bold text-purple-800 mb-6">Congratulations on buying the Augier AI premium subscription!</div>
 
-                    <p className="mb-6 text-lg text-gray-700 font-semibold">You got access to all premium features:</p>
+                    <div className="mb-6 text-lg text-gray-700 font-semibold">You got access to all premium features:</div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 mb-6">
                         {features.map((feature, index) => (
                             <div key={index} className="flex items-center text-gray-800 mb-2">
@@ -117,7 +73,7 @@ const PaymentConfirmation = () => {
                                         clipRule="evenodd"
                                     />
                                 </svg>
-                                <p>{feature}</p>
+                                <div>{feature}</div>
                             </div>
                         ))}
                     </div>
@@ -127,7 +83,7 @@ const PaymentConfirmation = () => {
                         <input
                             type="checkbox"
                             id="emailNotifications"
-                            checked={isChecked}
+                            checked={isEmailNotificationsChecked}
                             onChange={handleCheckboxChange}
                             className="mr-3"
                         />
@@ -145,4 +101,4 @@ const PaymentConfirmation = () => {
     );
 };
 
-export default PaymentConfirmation;
+export default PaymentConfirmationPage;
